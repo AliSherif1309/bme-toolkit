@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety First · The Contamination Zone</title>
+    <style>
+        :root {
+            --bg: #0d1a0f;
+            --panel: #142118;
+            --panel2: #1a2e1f;
+            --gold: #c9a85c;
+            --gold2: #a08040;
+            --green: #4a9e6f;
+            --green2: #3b8058;
+            --red: #c75b4a;
+            --red2: #a04035;
+            --teal: #4a9e9e;
+            --text: #e0dcd0;
+            --text2: #b0a894;
+            --text3: #8a8275;
+            --border: #2a4030;
+            --border2: #1a2e1f;
+            --highlight: #f0d78c;
+            --biohazard: #f5a623;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --font: 'Georgia', 'Times New Roman', serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            line-height: 1.7;
+            background-image:
+                radial-gradient(ellipse at 30% 20%, rgba(245, 166, 35, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(74, 158, 111, 0.04) 0%, transparent 50%);
+        }
+        .game-container {
+            width: 100%;
+            max-width: 750px;
+            background: var(--panel);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+            overflow: hidden;
+        }
+        .game-header {
+            background: #0f1c12;
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        .game-header .title-area {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .game-header .bio-icon {
+            font-size: 1.6rem;
+            color: var(--biohazard);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        .game-header h2 {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--text);
+            letter-spacing: 0.3px;
+        }
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .score-item {
+            text-align: center;
+        }
+        .score-item .val {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .score-item .lbl {
+            font-size: 0.7rem;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .game-body {
+            padding: 2rem 1.8rem;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+        }
+        .scene-title {
+            font-size: 1.3rem;
+            color: var(--highlight);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            text-align: center;
+            margin-bottom: 0.3rem;
+        }
+        .scene-narrative {
+            font-size: 1rem;
+            color: #c8d6e0;
+            line-height: 1.8;
+            background: var(--panel2);
+            padding: 1.3rem 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--biohazard);
+            font-style: italic;
+        }
+        .scene-narrative strong {
+            color: var(--highlight);
+            font-style: normal;
+        }
+        .choices-area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+        .choice-btn {
+            background: #1a2e24;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.4rem;
+            cursor: pointer;
+            text-align: left;
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            letter-spacing: 0.2px;
+            position: relative;
+        }
+        .choice-btn:hover {
+            border-color: var(--gold);
+            background: #1e3528;
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        .choice-btn .choice-letter {
+            display: inline-block;
+            background: var(--gold);
+            color: #1a1a1a;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: 700;
+            margin-right: 0.8rem;
+            font-size: 0.85rem;
+        }
+        .feedback-box {
+            padding: 1.2rem 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            animation: fadeSlide 0.4s ease;
+        }
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .feedback-box.safe {
+            background: #1a3028;
+            border: 1px solid var(--green);
+            color: #8fd4a0;
+        }
+        .feedback-box.warning {
+            background: #2f2a1a;
+            border: 1px solid var(--gold);
+            color: #f0d78c;
+        }
+        .feedback-box.danger {
+            background: #2f1f1c;
+            border: 1px solid var(--red);
+            color: #e89a8e;
+        }
+        .feedback-box .lesson-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.7rem 1.6rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            letter-spacing: 0.3px;
+            font-family: var(--font);
+            transition: all 0.2s ease;
+            color: #fff;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--green);
+            box-shadow: 0 4px 14px rgba(74, 158, 111, 0.3);
+        }
+        .btn-primary:hover {
+            background: var(--green2);
+            transform: translateY(-2px);
+        }
+        .btn-gold {
+            background: var(--gold);
+            color: #1a1a1a;
+            box-shadow: 0 4px 14px rgba(201, 168, 92, 0.3);
+        }
+        .btn-gold:hover {
+            background: #d4b468;
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+        .btn-outline:hover {
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+        .certificate {
+            background: #fdfaf3;
+            color: #2b2b2b;
+            padding: 2.5rem 2rem;
+            border-radius: 6px;
+            text-align: center;
+            border: 8px double #b9975b;
+            font-family: var(--font);
+        }
+        .certificate .cert-seal {
+            font-size: 4rem;
+            color: #b9975b;
+        }
+        .certificate h2 {
+            font-size: 1.8rem;
+            color: #3b2e1e;
+            font-weight: 400;
+            margin: 0.5rem 0;
+        }
+        .certificate .cert-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #5e3a1c;
+            margin: 0.8rem 0;
+            border-bottom: 2px solid #b9975b;
+            display: inline-block;
+            padding-bottom: 0.3rem;
+            min-width: 200px;
+        }
+        .certificate .cert-detail {
+            font-size: 0.9rem;
+            color: #5c4a2e;
+            margin: 0.3rem 0;
+        }
+        .certificate .cert-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--green);
+            margin: 0.6rem 0;
+        }
+        .progress-bar-outer {
+            height: 8px;
+            background: #1a2e1f;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background: var(--biohazard);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .text-center {
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .game-body {
+                padding: 1.2rem 1rem;
+            }
+            .game-header {
+                padding: 0.8rem 1rem;
+            }
+            .choice-btn {
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .game-header,
+            .btn,
+            .game-body>*:not(.certificate) {
+                display: none !important;
+            }
+            .game-container {
+                box-shadow: none;
+                border: none;
+                background: white;
+            }
+            .certificate {
+                border: 4px double #b9975b;
+                page-break-inside: avoid;
+            }
+            @page {
+                margin: 1cm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- HEADER -->
+        <div class="game-header">
+            <div class="title-area">
+                <span class="bio-icon">☣️</span>
+                <h2>Safety First: The Contamination Zone</h2>
+            </div>
+            <div class="score-display">
+                <div class="score-item">
+                    <div class="val" id="scoreDisplay">100</div>
+                    <div class="lbl">Safety Score</div>
+                </div>
+                <div class="score-item">
+                    <div class="val" id="sceneDisplay">1/8</div>
+                    <div class="lbl">Scene</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="progress-bar-outer">
+            <div class="progress-bar-inner" id="progressBar" style="width: 0%;"></div>
+        </div>
+
+        <!-- GAME BODY -->
+        <div class="game-body" id="gameBody">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+
+    <script>
+        // ==================== GAME STATE ====================
+        const state = {
+            currentScene: 'intro',
+            score: 100,
+            totalScenes: 8,
+            scenesVisited: [],
+            decisions: {},
+            maxScore: 100,
+            safetyViolations: 0,
+            playerName: 'Service BME Professional',
+        };
+
+        // ==================== SCENE DATA ====================
+        const scenes = {
+            // ---- SCENE: Intro / Cover ----
+            'intro': {
+                title: 'The Biohazard Call',
+                narrative: `
+            <p>It's <strong>07:42 on a Tuesday morning</strong> in Doha. Your phone rings. A lab manager at a private hospital is desperate.</p>
+            <p>"Our <strong>blood gas analyzer</strong> is down — and we have a <strong>biohazard situation</strong>. A sample probe broke during a run. There's blood in the sample chamber. We've cordoned off the area, but we need you <strong>now</strong>."</p>
+            <p>You grab your tool case and notebook. As you drive to the hospital, you run through the safety protocols in your mind. This isn't just a repair — it's a <strong>contamination zone</strong>.</p>
+            <p style="color:var(--biohazard); font-weight:600;">☣️ BIOHAZARD NOTICE ACTIVE · PROCEED WITH CAUTION ☣️</p>
+          `,
+                choices: [
+                    { text: 'Begin the investigation', nextScene: 'arrival', letter: '▶', scoreChange: 0 },
+                ],
+            },
+
+            // ---- SCENE 1: Arrival at the Lab ----
+            'arrival': {
+                title: 'Scene 1 · Arrival at the Lab',
+                narrative: `
+            <p>You arrive at the lab entrance. A yellow <strong>biohazard sign</strong> is taped to the door. Through the glass, you can see the blood gas analyzer — it's powered off, and a small pool of something dark is visible on the bench.</p>
+            <p>The lab manager, Sarah, meets you. "Thank you for coming so quickly," she says. "The sample probe snapped while processing a <strong>hepatitis-positive patient sample</strong>. We've cleared the immediate area, but I need you to handle this safely."</p>
+            <p>She points to a <strong>PPE station</strong> near the door with gloves, gowns, goggles, face shields, and N95 masks.</p>
+            <p><strong>What do you do first?</strong></p>
+          `,
+                choices: [
+                    { text: 'Don full PPE: gown, double gloves, face shield, and N95 mask before entering',
+                        nextScene: 'ppe_correct', letter: 'A', scoreChange: 0, key: 'arrival_ppe' },
+                    { text: 'Put on gloves only — the rest takes too long, and the machine needs fixing',
+                        nextScene: 'ppe_wrong', letter: 'B', scoreChange: -25, key: 'arrival_ppe' },
+                    { text: 'Ask Sarah what PPE she thinks is necessary and follow her advice',
+                        nextScene: 'ppe_delegate', letter: 'C', scoreChange: -10, key: 'arrival_ppe' },
+                ],
+            },
+
+            // ---- SCENE: PPE Correct ----
+            'ppe_correct': {
+                title: '✅ Correct Choice',
+                narrative: `
+            <p>You carefully don a full <strong>impermeable gown</strong>, <strong>double nitrile gloves</strong>, an <strong>N95 respirator mask</strong>, and a <strong>full face shield</strong>. You check the seals on each item. It takes two minutes — but every second is an investment in your safety.</p>
+            <p>Sarah nods approvingly. "I can see you take this seriously. That gives me confidence."</p>
+            <p style="color:#8fd4a0;"><strong>+ Safety maintained. You're ready to enter the contamination zone.</strong></p>
+          `,
+                choices: [
+                    { text: 'Enter the lab and approach the analyzer', nextScene: 'approach', letter: '▶',
+                        scoreChange: 5 },
+                ],
+                feedbackType: 'safe',
+            },
+
+            // ---- SCENE: PPE Wrong ----
+            'ppe_wrong': {
+                title: '⚠️ Safety Violation',
+                narrative: `
+            <p>You grab a pair of gloves and walk into the lab. Within moments, Sarah stops you. "Wait — this is a <strong>hepatitis-positive sample</strong>! You need full barrier protection!"</p>
+            <p>You realise your mistake. A splash of contaminated blood could reach your skin or mucous membranes. You've just exposed yourself to a <strong>bloodborne pathogen risk</strong>.</p>
+            <p style="color:#e89a8e;"><strong>-25 Safety Score. You must return and don proper PPE.</strong></p>
+          `,
+                choices: [
+                    { text: 'Return to the PPE station and suit up properly', nextScene: 'ppe_correct',
+                        letter: '▶', scoreChange: 0 },
+                ],
+                feedbackType: 'danger',
+            },
+
+            // ---- SCENE: PPE Delegate ----
+            'ppe_delegate': {
+                title: '⚠️ Misplaced Responsibility',
+                narrative: `
+            <p>You ask Sarah what PPE you should wear. She hesitates. "Well… I think gloves and maybe a mask?" she says, uncertain.</p>
+            <p>You're the trained professional. <strong>You</strong> should know the PPE requirements for a biohazard situation. Delegating this decision to a non‑engineer undermines both safety and your professional authority.</p>
+            <p style="color:#f0d78c;"><strong>-10 Safety Score. You are ultimately responsible for your own safety.</strong></p>
+          `,
+                choices: [
+                    { text: 'Reassess and don full PPE on your own judgment', nextScene: 'ppe_correct',
+                        letter: '▶', scoreChange: 0 },
+                ],
+                feedbackType: 'warning',
+            },
+
+            // ---- SCENE: Approach the Analyzer ----
+            'approach': {
+                title: 'Scene 2 · Approaching the Contaminated Instrument',
+                narrative: `
+            <p>You enter the lab. The blood gas analyzer sits on a bench. The sample probe is visibly <strong>broken</strong>, and a small amount of dried and fresh blood is visible around the sample chamber. A used <strong>syringe</strong> is still connected to the probe port.</p>
+            <p>Nearby, a <strong>sharps container</strong> is overflowing — needles protrude from the top. The bench surface has <strong>visible blood spatter</strong>.</p>
+            <p>Your first priority is to <strong>secure the scene</strong> before touching anything.</p>
+            <p><strong>What do you do?</strong></p>
+          `,
+                choices: [
+                    { text: 'Remove the syringe and place it in the sharps container, then clean the bench with approved disinfectant before touching the analyzer',
+                        nextScene: 'secure_correct', letter: 'A', scoreChange: 5, key: 'secure' },
+                    { text: 'Immediately open the analyzer to diagnose the fault — time is critical',
+                        nextScene: 'secure_wrong', letter: 'B', scoreChange: -30, key: 'secure' },
+                    { text: 'Call your supervisor and ask them how to proceed',
+                        nextScene: 'secure_delegate', letter: 'C', scoreChange: -5, key: 'secure' },
+                ],
+            },
+
+            // ---- SCENE: Secure Correct ----
+            'secure_correct': {
+                title: '✅ Correct · Scene Secured',
+                narrative: `
+            <p>You carefully remove the contaminated syringe using <strong>forceps</strong> (not your hands — sharps risk) and place it in the sharps container. You then spray the bench surface with an <strong>approved tuberculocidal disinfectant</strong>, allowing the required <strong>10‑minute contact time</strong>.</p>
+            <p>While waiting, you document the scene: photos, notes on the sample type, and the condition of the instrument.</p>
+            <p style="color:#8fd4a0;"><strong>+5 Safety Score. The area is now safe to work in.</strong></p>
+          `,
+                choices: [
+                    { text: 'Begin the repair on the analyzer', nextScene: 'repair', letter: '▶',
+                    scoreChange: 0 },
+                ],
+                feedbackType: 'safe',
+            },
+
+            // ---- SCENE: Secure Wrong ----
+            'secure_wrong': {
+                title: '🚨 Critical Safety Breach',
+                narrative: `
+            <p>You reach for the syringe with your gloved hand — it slips and <strong>pricks your finger</strong> through the glove. Blood is visible on the needle. This was a hepatitis‑positive patient sample.</p>
+            <p>You've just experienced a <strong>needlestick injury with a known contaminated sharp</strong>. You must immediately begin the post‑exposure protocol: wash the wound, report the incident, and seek medical evaluation for <strong>PEP (post‑exposure prophylaxis)</strong>.</p>
+            <p style="color:#e89a8e;"><strong>-30 Safety Score. This is the most serious safety violation in the scenario.</strong></p>
+          `,
+                choices: [
+                    { text: 'Stop work immediately, report the needlestick, and follow post-exposure protocol',
+                        nextScene: 'needlestick', letter: '▶', scoreChange: 0 },
+                ],
+                feedbackType: 'danger',
+            },
+
+            // ---- SCENE: Secure Delegate ----
+            'secure_delegate': {
+                title: '⚠️ Unnecessary Delay',
+                narrative: `
+            <p>You call your supervisor. They remind you that you've been trained for biohazard situations and that every minute of delay increases the risk of cross‑contamination.</p>
+            <p>You know the protocol. Trust your training.</p>
+            <p style="color:#f0d78c;"><strong>-5 Safety Score. In the field, you are the authority on safety.</strong></p>
+          `,
+                choices: [
+                    { text: 'Secure the scene using your trained protocols', nextScene: 'secure_correct',
+                        letter: '▶', scoreChange: 0 },
+                ],
+                feedbackType: 'warning',
+            },
+
+            // ---- SCENE: Needlestick ----
+            'needlestick': {
+                title: 'Scene · Post‑Exposure Protocol',
+                narrative: `
+            <p>You immediately remove your gloves and <strong>wash the puncture wound with soap and water for a full minute</strong>. You inform Sarah of the incident and ask for the <strong>hospital's occupational health department</strong>.</p>
+            <p>The sample is confirmed hepatitis‑B positive. You are advised to begin <strong>PEP within 2 hours</strong> for maximum effectiveness. Because you acted quickly, your risk of seroconversion is significantly reduced.</p>
+            <p style="color:#f0d78c;"><strong>Lesson learned: Never rush past safety protocols. A 30‑second shortcut can lead to a lifetime of consequences.</strong></p>
+          `,
+                choices: [
+                    { text: 'Continue the scenario — another engineer will complete the repair',
+                        nextScene: 'cleanup', letter: '▶', scoreChange: -20 },
+                ],
+                feedbackType: 'danger',
+            },
+
+            // ---- SCENE: Repair ----
+            'repair': {
+                title: 'Scene 3 · The Repair',
+                narrative: `
+            <p>The work area is secure. You open the analyzer's sample chamber. The broken probe is visible, and there's <strong>dried blood inside the mechanism</strong>. The instrument's internal sensors also detected a <strong>fluid leak</strong> into the electronics compartment — which explains the shutdown.</p>
+            <p>You need to replace the sample probe, clean the internal chamber, and inspect the electronics for fluid damage. You also need to decide <strong>which cleaning agent to use</strong> on the internal components.</p>
+            <p><strong>What cleaning protocol do you follow?</strong></p>
+          `,
+                choices: [
+                    { text: 'Use an approved intermediate‑level disinfectant (e.g., 70% isopropyl alcohol or a 1:10 bleach solution), allowing proper contact time, then rinse with sterile water',
+                        nextScene: 'clean_correct', letter: 'A', scoreChange: 10, key: 'clean' },
+                    { text: 'Wipe the blood away with a dry paper towel — the instrument will run a self‑cleaning cycle',
+                        nextScene: 'clean_wrong', letter: 'B', scoreChange: -20, key: 'clean' },
+                    { text: 'Use the strongest cleaner available — industrial degreaser from your tool kit',
+                        nextScene: 'clean_damage', letter: 'C', scoreChange: -15, key: 'clean' },
+                ],
+            },
+
+            // ---- SCENE: Clean Correct ----
+            'clean_correct': {
+                title: '✅ Correct · Proper Decontamination',
+                narrative: `
+            <p>You apply <strong>70% isopropyl alcohol</strong> to a lint‑free cloth and carefully clean all contaminated surfaces inside the sample chamber. You allow the full <strong>contact time</strong> (2 minutes for alcohol) before wiping dry. You then rinse critical sensor areas with <strong>sterile water</strong> to prevent residue buildup.</p>
+            <p>You replace the broken probe with a new OEM part, recalibrate the instrument, and run three levels of QC. All pass.</p>
+            <p style="color:#8fd4a0;"><strong>+10 Safety Score. The instrument is now both functional and safe for patient samples.</strong></p>
+          `,
+                choices: [
+                    { text: 'Proceed to final cleanup and disposal', nextScene: 'cleanup', letter: '▶',
+                        scoreChange: 0 },
+                ],
+                feedbackType: 'safe',
+            },
+
+            // ---- SCENE: Clean Wrong ----
+            'clean_wrong': {
+                title: '⚠️ Incomplete Decontamination',
+                narrative: `
+            <p>You wipe the visible blood with a dry paper towel and close the chamber. But <strong>dried blood residue</strong> remains on the sensor surfaces. When you power on the instrument, the QC fails repeatedly — the sensors are reading inaccurately due to <strong>protein buildup</strong>.</p>
+            <p>More importantly, the instrument is <strong>not safe</strong> for the next patient sample. Residual biological material can cross‑contaminate future samples.</p>
+            <p style="color:#f0d78c;"><strong>-20 Safety Score. Visible cleanliness ≠ decontamination.</strong></p>
+          `,
+                choices: [
+                    { text: 'Re‑clean the instrument properly using approved disinfectant',
+                        nextScene: 'clean_correct', letter: '▶', scoreChange: 0 },
+                ],
+                feedbackType: 'warning',
+            },
+
+            // ---- SCENE: Clean Damage ----
+            'clean_damage': {
+                title: '⚠️ Equipment Damage',
+                narrative: `
+            <p>You spray industrial degreaser into the sample chamber. The strong solvent immediately <strong>clouds the optical sensor lenses</strong> and <strong>degrades the silicone seals</strong> around the probe port. The instrument now has additional faults that will require replacing expensive components.</p>
+            <p style="color:#f0d78c;"><strong>-15 Safety Score. Using unapproved chemicals on medical equipment can cause irreversible damage and void warranties.</strong></p>
+          `,
+                choices: [
+                    { text: 'Re‑clean properly and order replacement seals and sensors',
+                        nextScene: 'clean_correct', letter: '▶', scoreChange: -10 },
+                ],
+                feedbackType: 'warning',
+            },
+
+            // ---- SCENE: Cleanup & Disposal ----
+            'cleanup': {
+                title: 'Scene 4 · Final Cleanup & Waste Disposal',
+                narrative: `
+            <p>The repair is complete. Now you must <strong>dispose of all contaminated materials</strong> properly. You have:</p>
+            <ul>
+            <li>Used gloves (contaminated with blood)</li>
+            <li>Cleaning cloths soaked with disinfectant and blood residue</li>
+            <li>The broken sample probe (sharp, contaminated)</li>
+            <li>Your disposable gown</li>
+            </ul>
+            <p>You also need to <strong>remove your PPE in the correct order</strong> to avoid self‑contamination.</p>
+            <p><strong>What's your disposal and doffing sequence?</strong></p>
+          `,
+                choices: [
+                    { text: 'Dispose of sharps (broken probe) in the sharps container. Place all soft contaminated waste in a biohazard bag. Remove PPE in order: gloves first, then gown, then mask, then face shield — washing hands thoroughly after each step',
+                        nextScene: 'disposal_correct', letter: 'A', scoreChange: 10, key: 'disposal' },
+                    { text: 'Throw everything — sharps, cloths, gloves, and gown — into the regular trash bin. The cleaning staff will handle it',
+                        nextScene: 'disposal_wrong', letter: 'B', scoreChange: -35, key: 'disposal' },
+                    { text: 'Remove mask first (it\'s the most uncomfortable), then gloves, then gown',
+                        nextScene: 'doffing_wrong', letter: 'C', scoreChange: -15, key: 'disposal' },
+                ],
+            },
+
+            // ---- SCENE: Disposal Correct ----
+            'disposal_correct': {
+                title: '✅ Correct · Safe Disposal & Doffing',
+                narrative: `
+            <p>You carefully place the broken probe in the <strong>sharps container</strong> — never in regular waste. All soft contaminated waste goes into a <strong>biohazard bag</strong> labelled with the date and contents.</p>
+            <p>You remove your PPE in the correct order: <strong>gloves first</strong> (most contaminated), then <strong>gown</strong> (rolling it inward to contain contamination), then <strong>face shield</strong>, and finally the <strong>N95 mask</strong>. You wash your hands thoroughly after each removal step.</p>
+            <p style="color:#8fd4a0;"><strong>+10 Safety Score. No self‑contamination occurred during doffing.</strong></p>
+          `,
+                choices: [
+                    { text: 'Complete final documentation and sign off', nextScene: 'documentation',
+                        letter: '▶', scoreChange: 0 },
+                ],
+                feedbackType: 'safe',
+            },
+
+            // ---- SCENE: Disposal Wrong ----
+            'disposal_wrong': {
+                title: '🚨 Critical Disposal Violation',
+                narrative: `
+            <p>You throw the contaminated sharps and blood‑soaked materials into the regular trash. This exposes <strong>cleaning staff, waste handlers, and anyone downstream</strong> to bloodborne pathogens. This is not just a safety violation — in many jurisdictions, it's a <strong>legal violation</strong> with significant fines.</p>
+            <p style="color:#e89a8e;"><strong>-35 Safety Score. Proper biomedical waste disposal is non‑negotiable.</strong></p>
+          `,
+                choices: [
+                    { text: 'Retrieve the waste and dispose of it correctly in biohazard containers',
+                        nextScene: 'disposal_correct', letter: '▶', scoreChange: 0 },
+                ],
+                feedbackType: 'danger',
+            },
+
+            // ---- SCENE: Doffing Wrong ----
+            'doffing_wrong': {
+                title: '⚠️ Self‑Contamination Risk',
+                narrative: `
+            <p>You remove your mask first — but your <strong>contaminated gloves touch your face</strong> as you pull the mask off. Any blood or pathogen on the gloves has now been transferred to your face and mucous membranes.</p>
+            <p>The correct PPE removal order exists for a reason: <strong>remove the most contaminated items first</strong> (gloves), and never touch your face with contaminated gloves.</p>
+            <p style="color:#f0d78c;"><strong>-15 Safety Score. PPE donning and doffing sequences are evidence‑based protocols.</strong></p>
+          `,
+                choices: [
+                    { text: 'Wash your face immediately and learn the correct doffing sequence',
+                        nextScene: 'disposal_correct', letter: '▶', scoreChange: 0 },
+                ],
+                feedbackType: 'warning',
+            },
+
+            // ---- SCENE: Documentation ----
+            'documentation': {
+                title: 'Scene 5 · Documentation & Sign‑Off',
+                narrative: `
+            <p>The repair is complete. The instrument is cleaned, recalibrated, and passing QC. All waste has been properly disposed of. The lab manager is waiting for your report.</p>
+            <p>You need to document <strong>exactly what happened</strong> — for the hospital's records, for your own liability protection, and for the next engineer who may service this instrument.</p>
+            <p><strong>What level of detail do you include in your service report?</strong></p>
+          `,
+                choices: [
+                    { text: 'Document everything: the biohazard nature of the call, the PPE used, the contamination found, the cleaning protocol (including contact times), the parts replaced, QC results, and the waste disposal method',
+                        nextScene: 'doc_correct', letter: 'A', scoreChange: 10, key: 'doc' },
+                    { text: 'Write "Replaced sample probe, cleaned instrument, QC passed" — the biohazard detail isn\'t necessary for a technical report',
+                        nextScene: 'doc_minimal', letter: 'B', scoreChange: -20, key: 'doc' },
+                    { text: 'Ask Sarah what she wants in the report and write that',
+                        nextScene: 'doc_delegate', letter: 'C', scoreChange: -5, key: 'doc' },
+                ],
+            },
+
+            // ---- SCENE: Doc Correct ----
+            'doc_correct': {
+                title: '✅ Correct · Complete Documentation',
+                narrative: `
+            <p>You write a detailed service report including: the <strong>biohazard notice</strong>, the <strong>PPE used</strong>, the <strong>contamination found</strong> (including the hepatitis‑positive status of the sample), the <strong>cleaning protocol</strong> with contact times, the <strong>parts replaced</strong>, the <strong>QC results</strong>, and the <strong>waste disposal method</strong>.</p>
+            <p>This report protects you, the hospital, and future engineers. Sarah thanks you for your professionalism.</p>
+            <p style="color:#8fd4a0;"><strong>+10 Safety Score. Good documentation is a safety tool.</strong></p>
+          `,
+                choices: [
+                    { text: 'Complete the final lab release', nextScene: 'finale', letter: '▶',
+                    scoreChange: 0 },
+                ],
+                feedbackType: 'safe',
+            },
+
+            // ---- SCENE: Doc Minimal ----
+            'doc_minimal': {
+                title: '⚠️ Inadequate Documentation',
+                narrative: `
+            <p>Your report says "Replaced sample probe, cleaned instrument, QC passed." It makes no mention of the biohazard. Three weeks later, the instrument fails again. The next engineer opens it without PPE — because no one documented the contamination risk. They are exposed.</p>
+            <p style="color:#f0d78c;"><strong>-20 Safety Score. Your documentation protects the next person who touches this instrument.</strong></p>
+          `,
+                choices: [
+                    { text: 'Add the missing documentation now', nextScene: 'doc_correct', letter: '▶',
+                        scoreChange: 0 },
+                ],
+                feedbackType: 'warning',
+            },
+
+            // ---- SCENE: Doc Delegate ----
+            'doc_delegate': {
+                title: '⚠️ Avoided Responsibility',
+                narrative: `
+            <p>You let Sarah decide what goes into the report. But Sarah is not a biomedical engineer. She doesn't know what's legally required or clinically relevant. Documentation is <strong>your professional responsibility</strong> — not the customer's.</p>
+            <p style="color:#f0d78c;"><strong>-5 Safety Score. You are the expert — act like one.</strong></p>
+          `,
+                choices: [
+                    { text: 'Write the complete report yourself', nextScene: 'doc_correct', letter: '▶',
+                        scoreChange: 0 },
+                ],
+                feedbackType: 'warning',
+            },
+
+            // ---- SCENE: Finale ----
+            'finale': {
+                title: '✅ Mission Complete',
+                narrative: `
+            <p>You've successfully navigated a complex biohazard service call — from proper PPE donning to safe sharps disposal to thorough documentation.</p>
+            <p>Sarah shakes your hand. "I've never seen an engineer handle a contamination situation so professionally," she says. "I'm calling your supervisor to tell them how impressed I am."</p>
+            <p>You return to your vehicle and take a moment to reflect. Every step you took today was a choice — and each choice either protected or endangered someone. <strong>Safety isn't a checkbox. It's a mindset.</strong></p>
+          `,
+                choices: [
+                    { text: 'View your final score and certificate', nextScene: 'certificate', letter: '🏆',
+                        scoreChange: 0 },
+                ],
+            },
+
+            // ---- SCENE: Certificate ----
+            'certificate': {
+                title: '🏆 Completion Certificate',
+                narrative: `
+            <div class="certificate">
+              <div class="cert-seal">☣️</div>
+              <h2>Safety First Certification</h2>
+              <p style="color:#5c4a2e;">This certifies that</p>
+              <div class="cert-name" id="certPlayerName">Service BME Professional</div>
+              <p style="color:#5c4a2e;">successfully completed</p>
+              <p style="font-size:1.2rem; font-weight:600; color:#3b2e1e;">The Contamination Zone</p>
+              <p class="cert-detail">A Biohazard Safety Simulation for BMEs</p>
+              <div class="cert-score" id="certScore">100</div>
+              <p class="cert-detail">Safety Score</p>
+              <p class="cert-detail" id="certRating"></p>
+              <p class="cert-detail" style="margin-top:1rem;">Safety Violations: <strong id="certViolations">0</strong></p>
+              <p class="cert-detail" style="font-size:0.8rem; color:#8b7a5e; margin-top:1rem;">
+                <em>"Every choice either protects or endangers. Safety is a mindset, not a checkbox."</em>
+              </p>
+            </div>
+          `,
+                choices: [
+                    { text: '🔄 Play Again', nextScene: 'intro', letter: '', scoreChange: 0, reset: true },
+                    { text: '🖨️ Print Certificate', nextScene: '', letter: '', scoreChange: 0, action: 'print' },
+                ],
+                isCertificate: true,
+            },
+        };
+
+        // ==================== RENDER FUNCTIONS ====================
+        function renderScene(sceneKey) {
+            const scene = scenes[sceneKey];
+            if (!scene) return;
+
+            state.currentScene = sceneKey;
+            if (!state.scenesVisited.includes(sceneKey) && sceneKey !== 'certificate' && sceneKey !== 'intro') {
+                state.scenesVisited.push(sceneKey);
+            }
+
+            const body = document.getElementById('gameBody');
+            let html = '';
+
+            // Scene title
+            if (scene.title) {
+                html += `<div class="scene-title">${scene.title}</div>`;
+            }
+
+            // Narrative (skip for certificate since it's self-contained)
+            if (!scene.isCertificate) {
+                html += `<div class="scene-narrative">${scene.narrative}</div>`;
+            } else {
+                html += scene.narrative;
+            }
+
+            // Feedback box (if applicable)
+            if (scene.feedbackType && !scene.isCertificate) {
+                const icons = { safe: '✅', warning: '⚠️', danger: '🚨' };
+                html += `
+            <div class="feedback-box ${scene.feedbackType}">
+              <span class="lesson-icon">${icons[scene.feedbackType] || ''}</span>
+              ${scene.narrative.includes('Correct') ? 'Safe practice followed.' : scene.narrative.includes('Violation') ? 'Safety protocol breached.' : 'Caution advised.'}
+            </div>`;
+            }
+
+            // Choices (skip for certificate)
+            if (!scene.isCertificate && scene.choices) {
+                html += `<div class="choices-area">`;
+                scene.choices.forEach((choice, idx) => {
+                    const letter = choice.letter || String.fromCharCode(65 + idx);
+                    html += `
+                <button class="choice-btn" onclick="makeChoice('${sceneKey}', ${idx})">
+                  <span class="choice-letter">${letter}</span>${choice.text}
+                </button>`;
+                });
+                html += `</div>`;
+            }
+
+            // Certificate action buttons
+            if (scene.isCertificate && scene.choices) {
+                html += `<div class="choices-area" style="margin-top:1.5rem;">`;
+                scene.choices.forEach((choice, idx) => {
+                    if (choice.action === 'print') {
+                        html +=
+                            `<button class="btn btn-gold" onclick="window.print()" style="margin-right:0.5rem;">${choice.text}</button>`;
+                    } else if (choice.reset) {
+                        html +=
+                            `<button class="btn btn-outline" onclick="resetGame()">${choice.text}</button>`;
+                    } else if (choice.nextScene) {
+                        html +=
+                            `<button class="btn btn-primary" onclick="makeChoice('${sceneKey}', ${idx})">${choice.text}</button>`;
+                    }
+                });
+                html += `</div>`;
+            }
+
+            body.innerHTML = html;
+
+            // Update HUD
+            updateHUD();
+        }
+
+        function makeChoice(sceneKey, choiceIndex) {
+            const scene = scenes[sceneKey];
+            if (!scene || !scene.choices || choiceIndex >= scene.choices.length) return;
+
+            const choice = scene.choices[choiceIndex];
+
+            // Handle reset
+            if (choice.reset) {
+                resetGame();
+                return;
+            }
+
+            // Handle print
+            if (choice.action === 'print') {
+                window.print();
+                return;
+            }
+
+            // Update score
+            if (choice.scoreChange) {
+                state.score += choice.scoreChange;
+                if (state.score < 0) state.score = 0;
+                if (state.score > 150) state.score = 150;
+            }
+
+            // Track safety violations
+            if (choice.scoreChange && choice.scoreChange < -15) {
+                state.safetyViolations++;
+            }
+
+            // Track decisions
+            if (choice.key) {
+                state.decisions[choice.key] = choice.text;
+            }
+
+            // Navigate to next scene
+            if (choice.nextScene) {
+                renderScene(choice.nextScene);
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreDisplay').textContent = state.score;
+            const visitedCount = state.scenesVisited.filter(s => s !== 'intro' && s !== 'certificate').length;
+            document.getElementById('sceneDisplay').textContent = `${Math.min(visitedCount + 1, state.totalScenes)}/${state.totalScenes}`;
+
+            // Progress bar
+            const progress = Math.min((visitedCount / state.totalScenes) * 100, 100);
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // Update certificate data if visible
+            const certName = document.getElementById('certPlayerName');
+            if (certName) certName.textContent = state.playerName;
+            const certScore = document.getElementById('certScore');
+            if (certScore) certScore.textContent = state.score;
+            const certViolations = document.getElementById('certViolations');
+            if (certViolations) certViolations.textContent = state.safetyViolations;
+            const certRating = document.getElementById('certRating');
+            if (certRating) {
+                if (state.score >= 120) certRating.textContent = '🏅 Rating: Safety Champion';
+                else if (state.score >= 90) certRating.textContent = '✅ Rating: Safe Practitioner';
+                else if (state.score >= 60) certRating.textContent = '⚠️ Rating: Needs Improvement';
+                else certRating.textContent = '🚨 Rating: Safety Review Required';
+            }
+        }
+
+        function resetGame() {
+            state.currentScene = 'intro';
+            state.score = 100;
+            state.scenesVisited = [];
+            state.decisions = {};
+            state.safetyViolations = 0;
+            state.maxScore = 100;
+            updateHUD();
+            renderScene('intro');
+        }
+
+        // ==================== INIT ====================
+        function init() {
+            // Allow player to set their name from URL or prompt
+            const urlParams = new URLSearchParams(window.location.search);
+            const nameParam = urlParams.get('name');
+            if (nameParam) {
+                state.playerName = nameParam;
+            }
+
+            updateHUD();
+            renderScene('intro');
+        }
+
+        init();
+    </script>
+</body>
+</html>
