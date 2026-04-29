@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethics for Biomedical Equipment Engineers · An Interactive Guide</title>
+  <style>
+    :root {
+      --bg: #f5efe0;
+      --surface: #fffdf7;
+      --text: #3e3a34;
+      --text2: #5c5548;
+      --text3: #8a8275;
+      --gold: #9e7d3f;
+      --gold-light: #c9a85c;
+      --green: #2b5a3a;
+      --green-light: #3d7a52;
+      --red: #b54a3e;
+      --border: #d9d0bb;
+      --border2: #e8e0cd;
+      --radius: 6px;
+      --font: 'Georgia', 'Times New Roman', serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      line-height: 1.7;
+    }
+    .book-container {
+      max-width: 760px;
+      width: 100%;
+      background: var(--surface);
+      border-radius: 4px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.1);
+      padding: 3rem 2.5rem;
+      margin-bottom: 2rem;
+    }
+    .page {
+      page-break-after: always;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px dashed #c9bb9a;
+      min-height: 50vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .page:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; page-break-after: auto; }
+    h1 {
+      font-size: 2.3rem;
+      font-weight: 400;
+      text-align: center;
+      color: var(--green);
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.4px;
+      border-bottom: 3px double #b9975b;
+      padding-bottom: 0.8rem;
+      font-style: italic;
+    }
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: #4a3f2f;
+      margin: 1.3rem 0 0.7rem;
+      font-style: italic;
+      text-align: center;
+    }
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: #5e4a34;
+      margin: 1rem 0 0.5rem;
+      border-left: 4px solid var(--gold);
+      padding-left: 1rem;
+    }
+    .value-sentence {
+      font-size: 1.15rem;
+      font-style: italic;
+      color: #7a623f;
+      text-align: center;
+      margin: 1.4rem 0;
+      padding: 0.6rem 1rem;
+      border-top: 1px solid #c9bb9a;
+      border-bottom: 1px solid #c9bb9a;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+    .qatar-note {
+      background: #f3efe2;
+      padding: 0.8rem 1.3rem;
+      border-left: 5px solid #8b6f4a;
+      font-style: italic;
+      margin: 1.2rem 0;
+      color: #4b3d2c;
+      font-size: 0.95rem;
+    }
+    .exercise-box {
+      background: #f8f6ed;
+      border: 2px solid #b9975b;
+      padding: 1.1rem 1.4rem;
+      margin: 1.2rem 0;
+      border-radius: var(--radius);
+    }
+    .exercise-box h4 {
+      color: #7a5c2e;
+      margin-top: 0;
+      font-style: italic;
+      font-size: 1rem;
+    }
+    .exercise-box .lines {
+      border-bottom: 1px dotted #b9a98b;
+      height: 1.8rem;
+      margin: 0.4rem 0;
+    }
+    .exercise-box .lines.long {
+      height: 3rem;
+      border-bottom: 1px dotted #b9a98b;
+    }
+    .action-box {
+      background: #eef6f0;
+      border: 1px solid #b6cfb8;
+      padding: 1rem 1.4rem;
+      margin: 1.2rem 0;
+      border-radius: var(--radius);
+    }
+    .action-box strong { color: #2b4b3a; font-size: 1.05rem; }
+    .framework-box {
+      background: #fdfaf3;
+      border: 1px solid #d4c8a8;
+      padding: 1rem 1.4rem;
+      margin: 1.2rem 0;
+      border-radius: var(--radius);
+    }
+    ul, ol { margin: 0.6rem 0 0.6rem 2rem; }
+    li { margin-bottom: 0.2rem; }
+    .chapter-title {
+      font-size: 1.4rem;
+      text-align: center;
+      color: #2b4b3a;
+      margin: 0.5rem 0 1.5rem;
+      font-style: italic;
+    }
+    .signature {
+      text-align: right;
+      font-style: italic;
+      color: #8b6f4a;
+      margin-top: 1.6rem;
+    }
+    .toc-item {
+      margin: 0.4rem 0;
+      font-size: 0.9rem;
+      padding-left: 1rem;
+      border-left: 2px solid #b9975b;
+    }
+    .page-number {
+      text-align: right;
+      font-size: 0.85rem;
+      color: #a19478;
+      margin-top: 1.1rem;
+      font-style: italic;
+    }
+    .highlight { color: #8b5e3c; font-weight: 600; }
+    .letter { font-style: italic; color: #3e3525; }
+    .my-input {
+      display: inline-block;
+      min-width: 120px;
+      border-bottom: 1px dashed #8b6f4a;
+      color: #5e4a34;
+    }
+    @media print {
+      @page { size: A4; margin: 2cm 1.8cm 2.2cm 1.8cm; }
+      body { background: white; padding: 0; margin: 0; color: black; }
+      .book-container { max-width: 100%; box-shadow: none; border-radius: 0; background: white; padding: 0; margin: 0; width: 100%; }
+      .page { page-break-after: always; border-bottom: none; margin-bottom: 0; padding-bottom: 0; min-height: auto; display: block; }
+      .page:last-child { page-break-after: auto; }
+      .qatar-note, .exercise-box, .action-box, .framework-box { background: #f9f9f3; border-color: #aaa; color: #1a1a1a; }
+      .value-sentence { color: #4a351c; border-color: #8b6f4a; }
+      .page-number { color: #5c5040; }
+      h1, h2, h3, .chapter-title { color: #1f3327; }
+    }
+  </style>
+</head>
+<body>
+  <div class="book-container">
+
+    <!-- PAGE 1 – COVER -->
+    <div class="page">
+      <h1>The Right Choice</h1>
+      <p style="text-align:center; font-size:1.25rem; color:#4a3f2f;">Ethics for Biomedical Equipment Engineers</p>
+      <p style="text-align:center; margin-top:2rem; color:#8b6f4a;">📍 Qatar · Lab Equipment Specialist · Service BME</p>
+      <div class="value-sentence">“Every calibration, every decision, every silence — ethics is not a policy. It is your presence when no one is watching.”</div>
+      <p style="text-align:center; margin-top:3rem; color:#5e4a34;">
+        A practical, story‑driven guide to navigating the grey zones of daily BME work.
+      </p>
+      <div class="page-number">— 1 —</div>
+    </div>
+
+    <!-- PAGE 2 – TABLE OF CONTENTS & WELCOME -->
+    <div class="page">
+      <h2>Contents of This Journey</h2>
+      <div class="toc-item"><strong>1.</strong> The Moment Ethics Entered My Toolbox</div>
+      <div class="toc-item"><strong>2.</strong> Why Ethics Matters for a Service BME</div>
+      <div class="toc-item"><strong>3.</strong> The 4‑Question Ethical Compass</div>
+      <div class="toc-item"><strong>4.</strong> Grey Zone 1 – The Borderline QC Release</div>
+      <div class="toc-item"><strong>5.</strong> Grey Zone 2 – The “Invisible” Shortcut</div>
+      <div class="toc-item"><strong>6.</strong> Grey Zone 3 – When Someone Asks You to Stay Silent</div>
+      <div class="toc-item"><strong>7.</strong> Ethics and Your Personal Brand</div>
+      <div class="toc-item"><strong>8.</strong> A 30‑Day Ethical Habit Challenge</div>
+      <div class="toc-item"><strong>9.</strong> Your Ethical Decision Checklist</div>
+      <div class="toc-item"><strong>10.</strong> A Letter to the Engineer I Want to Be</div>
+      <hr>
+      <p>This book doesn’t preach. It presents the real, uncomfortable moments you face in labs — and helps you build the clarity to act in alignment with your values. Together, we’ll explore what it means to be an engineer who can be trusted not just for technical skill, but for integrity.</p>
+      <div class="qatar-note">In Qatar’s rapidly growing healthcare system, biomedical engineers hold a position of quiet power. Your ethical choices ripple outward — to patient safety, to lab reputation, and to the community that depends on accurate results.</div>
+      <div class="page-number">— 2 —</div>
+    </div>
+
+    <!-- PAGE 3 – CHAPTER 1 -->
+    <div class="page">
+      <div class="chapter-title">1. The Moment Ethics Entered My Toolbox</div>
+      <p>I remember a Thursday night in Doha. A chemistry analyzer had been intermittently flagging a reagent error. The lab manager was anxious — 60 samples were waiting for morning rounds. After an hour, I found the issue: a partially clogged probe. Replacing it would take another two hours… or I could clean it and hope it held.</p>
+      <p>I cleaned it. The error disappeared. The QC passed — barely. I signed the service report and left. But that night, I couldn’t sleep. What if the probe clogged again during the night and nobody noticed the shift in results?</p>
+      <div class="value-sentence">“Technical competence gets you to the door. Ethical courage makes you worthy of walking through it.”</div>
+      <p>From that day, I promised myself: I will never let urgency trick me into compromising what’s right. That’s what this book is about: learning to hear the quiet voice <strong>before</strong> it becomes a regret.</p>
+      <div class="exercise-box">
+        <h4>✎ Exercise: Your “Restless Night” Moment</h4>
+        <p>Have you ever made a decision on a repair that later bothered you? Describe it briefly:</p>
+        <div class="lines long"></div>
+        <div class="lines"></div>
+        <p>What was the conflict you felt?</p>
+        <div class="lines"></div>
+      </div>
+      <div class="page-number">— 3 —</div>
+    </div>
+
+    <!-- PAGE 4 – CHAPTER 2 -->
+    <div class="page">
+      <h3>2. Why Ethics Matters for a Service BME</h3>
+      <p>Ethics is not a list of rules from HR. It’s the invisible structure that holds your professional life together. When a lab manager trusts you, they trust more than your hands — they trust your <strong>judgment</strong>. That judgment is ethical.</p>
+      <ul>
+        <li><strong>Patient safety:</strong> Every device you touch affects a patient. A shortcut that feels small can have cascading consequences.</li>
+        <li><strong>Trust capital:</strong> Once lost, trust is almost impossible to rebuild. Ethical decisions preserve your reputation.</li>
+        <li><strong>Legal & regulatory:</strong> In healthcare, ethical breaches often cross into legal violations — especially around documentation and device safety.</li>
+        <li><strong>Self‑respect:</strong> At the end of the day, you live with your choices. Integrity is a form of peace.</li>
+      </ul>
+      <div class="value-sentence">“Ethics is the calibration standard for your character. If it drifts, everything you measure becomes suspect.”</div>
+      <div class="exercise-box">
+        <h4>✎ Exercise: Ethics in Your Current Role</h4>
+        <p>List three situations in the last month where an ethical consideration influenced your decision (even if you didn’t call it “ethics” at the time):</p>
+        <p>1. <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+        <p>2. <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+        <p>3. <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+      </div>
+      <div class="page-number">— 4 —</div>
+    </div>
+
+    <!-- PAGE 5 – CHAPTER 3 -->
+    <div class="page">
+      <h3>3. The 4‑Question Ethical Compass</h3>
+      <p>When you’re in a grey zone, you need a fast, reliable framework. I use four simple questions. If the answer to any is “no”, pause and reconsider.</p>
+      <div class="framework-box">
+        <h4>🧭 The BME Ethical Compass</h4>
+        <p><strong>1. Is it safe?</strong> Does this decision protect patients, staff, and the integrity of the result?<br>
+        <strong>2. Is it honest?</strong> Would I document exactly what I did, without omission?<br>
+        <strong>3. Is it fair?</strong> Does it respect the interests of the lab, the patient, and the manufacturer?<br>
+        <strong>4. Would I be comfortable if it were made public?</strong> Would I defend this decision in front of my peers or an auditor?</p>
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Exercise: Apply the Compass Now</h4>
+        <p>Think of a current dilemma (even small). Run it through the four questions:</p>
+        <p><strong>Safe?</strong> <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp; <strong>Honest?</strong> <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp; <strong>Fair?</strong> <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp; <strong>Public?</strong> <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+        <p>What decision does the compass point to?</p>
+        <div class="lines"></div>
+      </div>
+      <div class="page-number">— 5 —</div>
+    </div>
+
+    <!-- PAGE 6 – CHAPTER 4 -->
+    <div class="page">
+      <h3>4. Grey Zone 1 – The Borderline QC Release</h3>
+      <p><strong>Scenario:</strong> You’ve just repaired a hematology analyzer. QC passes — but just barely, and on the second attempt. The first attempt failed, but you didn’t document it because “the second one passed.” The lab manager is pushing you to release the instrument for the evening batch. What do you do?</p>
+      <div class="framework-box">
+        <h4>🧩 Analysis</h4>
+        <p><strong>Why it’s tempting:</strong> Pressure, no “real” harm visible, everyone wants to go home.<br>
+        <strong>Why it’s wrong:</strong> Omitting the failed QC is dishonest. It hides a potential instability. If the instrument drifts later, your credibility is destroyed.<br>
+        <strong>Ethical response:</strong> “I need to document both QC attempts and investigate the instability. I recommend running a few more controls before releasing. I’ll stay and help.”</p>
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Exercise: Your Borderline Moment</h4>
+        <p>Have you ever faced a similar pressure? What did you do? What would you do now?</p>
+        <div class="lines long"></div>
+      </div>
+      <div class="value-sentence">“The result you hide today becomes the doubt that follows you tomorrow.”</div>
+      <div class="page-number">— 6 —</div>
+    </div>
+
+    <!-- PAGE 7 – CHAPTER 5 -->
+    <div class="page">
+      <h3>5. Grey Zone 2 – The “Invisible” Shortcut</h3>
+      <p><strong>Scenario:</strong> A centrifuge motor is noisy. You know it’s a bearing that will fail in a few months — but not today. Replacing it now would take three hours. You’re already behind on calls. You close the call as “completed, no further action.” Six weeks later, the bearing seizes during a STAT run.</p>
+      <div class="framework-box">
+        <h4>🧩 Analysis</h4>
+        <p><strong>Why it’s tempting:</strong> No one would have noticed today. It’s not “broken” yet.<br>
+        <strong>Why it’s wrong:</strong> You had the knowledge and withheld it. That’s a passive ethical breach. You traded short‑term convenience for long‑term reliability.<br>
+        <strong>Ethical response:</strong> “The bearing shows early wear. I recommend scheduling a replacement within 30 days. I’ll flag it in the PM report.”</p>
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Exercise: The Shortcut You Nearly Took</h4>
+        <p>Recall a time you chose the shorter path and later regretted it — or came close. How would you handle it now?</p>
+        <div class="lines long"></div>
+      </div>
+      <div class="value-sentence">“A problem postponed is not a problem solved. It is a debt paid with interest.”</div>
+      <div class="page-number">— 7 —</div>
+    </div>
+
+    <!-- PAGE 8 – CHAPTER 6 -->
+    <div class="page">
+      <h3>6. Grey Zone 3 – When Someone Asks You to Stay Silent</h3>
+      <p><strong>Scenario:</strong> A senior lab technologist accidentally spills reagent inside an analyzer compartment but cleans it up and asks you not to report it. “It’s fine now, right? No need to make a big deal.” The incident could eventually cause corrosion, but not immediately.</p>
+      <div class="framework-box">
+        <h4>🧩 Analysis</h4>
+        <p><strong>Why it’s tempting:</strong> You don’t want to embarrass a colleague. The damage isn’t visible yet.<br>
+        <strong>Why it’s wrong:</strong> Silence makes you complicit. If the corrosion later causes a failure, your silence becomes a lie.<br>
+        <strong>Ethical response:</strong> “I appreciate you telling me. Let’s document it as a near‑miss — no blame. I’ll clean it thoroughly and add a preventive note. That protects both of us.”</p>
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Exercise: The Silence Test</h4>
+        <p>Imagine a colleague asks you to hide a minor mistake. Write the words you would use to handle it ethically, yet kindly.</p>
+        <div class="lines long"></div>
+      </div>
+      <div class="value-sentence">“Integrity is saying the uncomfortable truth in a way that builds bridges, not burns them.”</div>
+      <div class="page-number">— 8 —</div>
+    </div>
+
+    <!-- PAGE 9 – CHAPTER 7 -->
+    <div class="page">
+      <h3>7. Ethics and Your Personal Brand</h3>
+      <p>Remember the trust equation from your other book? (Credibility + Reliability + Intimacy) ÷ Self‑Orientation. Ethics is the multiplier that holds it all together.</p>
+      <p>When a lab manager knows you will <strong>always</strong> document the truth — even when it’s inconvenient — your brand shifts from “good technician” to “trusted partner.” That is worth more than any certification.</p>
+      <div class="value-sentence">“Your brand is not your logo. It is the sum of the ethical choices you make when no checklist is watching.”</div>
+      <div class="exercise-box">
+        <h4>✎ Exercise: Brand Audit</h4>
+        <p>Ask yourself: “If my ethical choices of the last year were printed on a poster, would I be proud to hang it in the lab?”</p>
+        <p>What do you want your ethical brand to be known for? Write one sentence:</p>
+        <div class="lines long"></div>
+      </div>
+      <div class="page-number">— 9 —</div>
+    </div>
+
+    <!-- PAGE 10 – CHAPTER 8 -->
+    <div class="page">
+      <h3>8. A 30‑Day Ethical Habit Challenge</h3>
+      <p>Ethics isn’t theoretical — it’s a muscle. For the next 30 days, try these small, daily exercises.</p>
+      <div class="action-box">
+        <strong>📋 30‑Day Ethical Fitness Plan</strong><br><br>
+        <strong>Week 1 – Awareness:</strong> Each evening, write down one ethical decision you made (even tiny). No judgment.<br>
+        <strong>Week 2 – Documentation:</strong> On every service report, add a line: “Ethical note: [any safety/transparency decision].”<br>
+        <strong>Week 3 – Courage:</strong> Have one difficult conversation where you advocate for patient safety over convenience.<br>
+        <strong>Week 4 – Teaching:</strong> Share one ethical lesson with a junior engineer or a colleague.</p>
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Commitment</h4>
+        <p>I, <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, commit to this 30‑day challenge starting <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
+        <p>The one habit I’ll focus on most: <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+      </div>
+      <div class="page-number">— 10 —</div>
+    </div>
+
+    <!-- PAGE 11 – CHAPTER 9 -->
+    <div class="page">
+      <h3>9. Your Ethical Decision Checklist</h3>
+      <p>Use this every time you face a grey zone. Keep a printed copy in your tool case.</p>
+      <div class="framework-box">
+        <h4>✅ Quick Ethics Checklist</h4>
+        <p>☐ Did I document exactly what happened?<br>
+        ☐ Did I avoid hiding any relevant information?<br>
+        ☐ Would I be comfortable if this decision were reviewed by an auditor?<br>
+        ☐ Does this decision prioritise patient safety over convenience?<br>
+        ☐ Did I communicate honestly with all stakeholders?<br>
+        ☐ If I were the patient, would I want the engineer to make this choice?</p>
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Personalise It</h4>
+        <p>Add one more question to the checklist that is specific to your daily work:</p>
+        <div class="lines"></div>
+      </div>
+      <div class="value-sentence">“Checklists don’t replace conscience — they awaken it.”</div>
+      <div class="page-number">— 11 —</div>
+    </div>
+
+    <!-- PAGE 12 – CHAPTER 10 / FINAL LETTER -->
+    <div class="page">
+      <h2>10. A Letter to the Engineer I Want to Be</h2>
+      <p class="letter"><em>Dear future me,</em></p>
+      <p class="letter"><em>You will face pressure. You will face shortcuts that feel harmless. But remember: you are the last safety net between a machine and a life. Your signature is a promise that you did the right thing — not the easy thing. Carry the 4‑question compass always. Be the engineer whose name is spoken with trust, not doubt. You owe that to yourself, to the patients, and to the heart of the lab.</em></p>
+      <div class="signature">— With conviction —</div>
+      <div class="exercise-box">
+        <h4>✎ Write Your Own Letter</h4>
+        <p>What do you want your future self to remember when ethics feel difficult?</p>
+        <div class="lines long"></div>
+        <div class="lines long"></div>
+      </div>
+      <div class="value-sentence">“Lab integrity. Patient safety. Engineer accountability. This is your ethical mark.”</div>
+      <div class="page-number">— 12 —</div>
+    </div>
+
+  </div>
+</body>
+</html>
