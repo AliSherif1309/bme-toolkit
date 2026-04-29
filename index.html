@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RCA Toolkit · Lab Equipment</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2b5a3a">
+</head>
+<body>
+  <div class="app-container">
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="logo-area">
+        <img id="userLogo" src="" alt="Logo" style="display:none; height:40px; margin-right:1rem;">
+        <span class="logo-icon">🔬</span>
+        <div>
+          <h1>RCA Toolkit</h1>
+          <div class="subtitle">Root Cause Analysis · Lab Equipment · Service BME</div>
+        </div>
+      </div>
+      <div class="user-profile-area">
+        <input type="text" id="globalUserName" placeholder="Your Name" class="name-input" onchange="saveUserName()">
+        <button class="btn btn-sm btn-outline" onclick="uploadLogo()">🖼️ Logo</button>
+        <input type="file" id="logoUpload" accept="image/*" style="display:none" onchange="handleLogoUpload(event)">
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-sm" onclick="exportAllData()">📥 Export</button>
+        <button class="btn btn-outline btn-sm" onclick="importAllData()">📤 Import</button>
+        <button class="btn btn-outline btn-sm" onclick="backupToGist()">☁️ Sync Gist</button>
+        <button class="btn btn-gold btn-sm" onclick="printCurrentTemplate()">🖨️ Print</button>
+        <button class="btn btn-danger btn-sm" onclick="clearCurrentTemplate()">🗑️ Clear</button>
+        <button class="btn btn-sm btn-outline" onclick="toggleDarkMode()">🌓</button>
+      </div>
+    </header>
+
+    <!-- TAB NAVIGATION -->
+    <nav class="tab-nav" id="tabNav">
+      <button class="tab-btn active" data-tab="5why">❓ 5-Why</button>
+      <button class="tab-btn" data-tab="fishbone">🐟 Fishbone</button>
+      <button class="tab-btn" data-tab="a3">📋 A3</button>
+      <button class="tab-btn" data-tab="timeline">🕐 Timeline</button>
+      <button class="tab-btn" data-tab="matrix">📊 C&E Matrix</button>
+      <button class="tab-btn" data-tab="checklist">✅ Checklist</button>
+      <button class="tab-btn" data-tab="problemsolve">🧠 Solve</button>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-panel" id="mainPanel"></main>
+  </div>
+
+  <!-- MODAL OVERLAY -->
+  <div id="modalOverlay" class="modal-overlay" style="display:none;" onclick="closeModal(event)">
+    <div class="modal" id="modalContent" onclick="event.stopPropagation()"></div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
