@@ -1,5 +1,5 @@
 // ============================================================
-//  RCA Toolkit – app.js  (FIXED: placeholder, delete bug, text color)
+//  RCA Toolkit – app.js  (FIXED: data loss on delete/add)
 //  All 7 templates, user profile, version history, PWA, cloud sync
 // ============================================================
 
@@ -11,7 +11,7 @@ const STORE_USER = 'user';
 
 function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 2);
+    const request = indexedDB.open(DB_NAME, 3);
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
       if (!db.objectStoreNames.contains(STORE_TEMPLATES)) {
@@ -75,9 +75,7 @@ async function saveUserName() {
   });
 }
 
-function uploadLogo() {
-  document.getElementById('logoUpload').click();
-}
+function uploadLogo() { document.getElementById('logoUpload').click(); }
 
 async function handleLogoUpload(event) {
   const file = event.target.files[0];
@@ -208,11 +206,12 @@ async function getTemplateRecord(templateName) {
   });
 }
 
-// FIX: New immediate-save function (bypasses the 800ms timeout)
+// Immediate save (no delay)
 async function saveNow(templateName, data) {
   await saveTemplateSnapshot(templateName, data);
 }
 
+// Normal save with version snapshot
 async function saveTemplateSnapshot(templateName, newData) {
   if (!db) await openDB();
   const record = await getTemplateRecord(templateName);
@@ -226,6 +225,15 @@ async function saveTemplateSnapshot(templateName, newData) {
   const store = tx.objectStore(STORE_TEMPLATES);
   store.put(record);
   return new Promise((resolve) => { tx.oncomplete = resolve; });
+}
+
+// 🛡️ FIX: flush any pending auto-save before deleting/adding
+async function flushPendingSave() {
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+    saveTimeout = null;
+    await saveTemplateSnapshot(currentTab, currentData);
+  }
 }
 
 async function restoreVersion(templateName, versionIndex) {
@@ -414,9 +422,7 @@ async function clearCurrentTemplate() {
 }
 
 // ---------- Print current template ----------
-function printCurrentTemplate() {
-  window.print();
-}
+function printCurrentTemplate() { window.print(); }
 
 // ---------- Auto-save after edits (for typing) ----------
 let saveTimeout;
@@ -427,8 +433,21 @@ function autoSave(templateName, data) {
   }, 800);
 }
 
-// FIX: renderTemplate now accepts optional preloadedData to skip IndexedDB fetch
-// This prevents the delete bug where old data was fetched before the save completed
+// 🖐️ Manual save button
+async function manualSave() {
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+    saveTimeout = null;
+  }
+  await saveTemplateSnapshot(currentTab, currentData);
+  const indicator = document.getElementById('saveIndicator');
+  if (indicator) {
+    indicator.textContent = '💾 Saved manually';
+    setTimeout(() => { indicator.textContent = '💾 Auto-saved'; }, 2000);
+  }
+}
+
+// ---------- Render a template (all 7 types) ----------
 async function renderTemplate(key, preloadedData = null) {
   currentTab = key;
 
@@ -458,7 +477,7 @@ async function renderTemplate(key, preloadedData = null) {
         <button class="btn btn-sm btn-outline" onclick="showVersionHistory('${key}')" style="margin-left:0.5rem;">📜 History</button>
       </h2>
       <div class="template-actions">
-        <span class="save-indicator">💾 Auto-saved</span>
+        <span class="save-indicator" id="saveIndicator" onclick="manualSave()" style="cursor:pointer;" title="Click to save immediately">💾 Auto-saved</span>
         <button class="btn btn-outline btn-sm" onclick="printCurrentTemplate()">🖨️ Print</button>
         <button class="btn btn-danger btn-sm" onclick="clearCurrentTemplate()">🗑️ Clear</button>
       </div>
@@ -509,7 +528,7 @@ async function renderTemplate(key, preloadedData = null) {
   const activeBtn = document.querySelector(`.tab-btn[data-tab="${key}"]`);
   if (activeBtn) activeBtn.classList.add('active');
 
-  // Attach editable listeners (this now handles placeholder focus/blur)
+  // Attach editable listeners (handles placeholder focus/blur)
   attachEditableListeners(key);
 
   // Redraw fishbone if needed
@@ -519,7 +538,7 @@ async function renderTemplate(key, preloadedData = null) {
 }
 
 // ---------- Template Rendering Functions ----------
-// FIX: All editable fields now include data-placeholder attribute
+// 5-Why
 function render5Why(data) {
   let html = `
     <table class="rca-table" style="margin-bottom:1rem;">
@@ -553,22 +572,22 @@ function render5Why(data) {
   return html;
 }
 
-// FIX: addWhyRow now saves immediately, then re-renders with currentData
 async function addWhyRow() {
+  await flushPendingSave();
   currentData.whys.push('');
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
 }
 
-// FIX: deleteWhyRow now saves immediately, then re-renders with currentData
 async function deleteWhyRow(index) {
   if (currentData.whys.length <= 1) { showToast('⚠️ Keep at least 1 Why'); return; }
+  await flushPendingSave();
   currentData.whys.splice(index, 1);
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
 }
 
-// ---------- Fishbone ----------
+// Fishbone
 function renderFishbone(data) {
   let html = `
     <table class="rca-table" style="margin-bottom:1rem;">
@@ -595,8 +614,8 @@ function renderFishbone(data) {
   return html;
 }
 
-// FIX: addFishboneCause now saves immediately
 async function addFishboneCause(cat) {
+  await flushPendingSave();
   currentData.categories[cat].push('');
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
@@ -637,7 +656,7 @@ function drawFishboneSVG(data) {
   svg.innerHTML = s;
 }
 
-// ---------- A3 Report ----------
+// A3 Report
 function renderA3(data) {
   let html = `
     <table class="rca-table" style="margin-bottom:1rem;">
@@ -647,24 +666,24 @@ function renderA3(data) {
     <div class="a3-grid">
       <div class="a3-cell"><h4>1. Background</h4><span class="editable-field ${!data.background?'placeholder':''}" data-path="a3.background" data-placeholder="Why is this problem important?" contenteditable="true">${escHtml(data.background) || 'Why is this problem important?'}</span></div>
       <div class="a3-cell"><h4>2. Current State</h4><span class="editable-field ${!data.currentState?'placeholder':''}" data-path="a3.currentState" data-placeholder="What is happening now?" contenteditable="true">${escHtml(data.currentState) || 'What is happening now?'}</span></div>
-      <div class="a3-cell"><h4>3. Goal / Target State</h4><span class="editable-field ${!data.goal?'placeholder':''}" data-path="a3.goal" data-placeholder="What does success look like?" contenteditable="true">${escHtml(data.goal) || 'What does success look like?'}</span></div>
+      <div class="a3-cell"><h4>3. Goal</h4><span class="editable-field ${!data.goal?'placeholder':''}" data-path="a3.goal" data-placeholder="What does success look like?" contenteditable="true">${escHtml(data.goal) || 'What does success look like?'}</span></div>
       <div class="a3-cell"><h4>4. Root Cause Analysis</h4><span class="editable-field ${!data.rootCauseAnalysis?'placeholder':''}" data-path="a3.rootCauseAnalysis" data-placeholder="Use 5-Why or Fishbone results..." contenteditable="true">${escHtml(data.rootCauseAnalysis) || 'Use 5-Why or Fishbone results...'}</span></div>
       <div class="a3-cell"><h4>5. Countermeasures</h4><span class="editable-field ${!data.countermeasures?'placeholder':''}" data-path="a3.countermeasures" data-placeholder="Actions to address root cause" contenteditable="true">${escHtml(data.countermeasures) || 'Actions to address root cause'}</span></div>
-      <div class="a3-cell"><h4>6. Check / Verify Results</h4><span class="editable-field ${!data.checkResults?'placeholder':''}" data-path="a3.checkResults" data-placeholder="How did you verify the fix?" contenteditable="true">${escHtml(data.checkResults) || 'How did you verify the fix?'}</span></div>
-      <div class="a3-cell full-width"><h4>7. Follow-Up / Standardization</h4><span class="editable-field ${!data.followUp?'placeholder':''}" data-path="a3.followUp" data-placeholder="PM updates? Training? Shared learning?" contenteditable="true">${escHtml(data.followUp) || 'PM updates? Training? Shared learning?'}</span></div>
+      <div class="a3-cell"><h4>6. Check Results</h4><span class="editable-field ${!data.checkResults?'placeholder':''}" data-path="a3.checkResults" data-placeholder="How did you verify the fix?" contenteditable="true">${escHtml(data.checkResults) || 'How did you verify the fix?'}</span></div>
+      <div class="a3-cell full-width"><h4>7. Follow-Up</h4><span class="editable-field ${!data.followUp?'placeholder':''}" data-path="a3.followUp" data-placeholder="PM updates? Training? Shared learning?" contenteditable="true">${escHtml(data.followUp) || 'PM updates? Training? Shared learning?'}</span></div>
     </div>
   `;
   return html;
 }
 
-// ---------- Timeline ----------
+// Timeline
 function renderTimeline(data) {
   let html = `
     <table class="rca-table" style="margin-bottom:1rem;">
       <tr><td style="width:140px;font-weight:600;color:var(--green);">📅 Date</td><td><span class="editable-field" data-path="timeline.date" data-placeholder="YYYY-MM-DD" contenteditable="true">${escHtml(data.date)}</span></td></tr>
       <tr><td style="font-weight:600;color:var(--green);">🔴 Problem</td><td><span class="editable-field ${!data.problem?'placeholder':''}" data-path="timeline.problem" data-placeholder="Describe the failure event" contenteditable="true">${escHtml(data.problem) || 'Describe the failure event'}</span></td></tr>
     </table>
-    <h4 style="color:var(--gold);margin-bottom:0.5rem;">🕐 Event Timeline (most recent first)</h4>
+    <h4 style="color:var(--gold);margin-bottom:0.5rem;">🕐 Event Timeline</h4>
     <ul class="timeline-list" id="timelineList">
   `;
   data.events.forEach((ev, i) => {
@@ -684,29 +703,29 @@ function renderTimeline(data) {
   return html;
 }
 
-// FIX: addTimelineEvent now saves immediately
 async function addTimelineEvent() {
+  await flushPendingSave();
   currentData.events.push({ time: '', description: '' });
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
 }
 
-// FIX: deleteTimelineEvent now saves immediately
 async function deleteTimelineEvent(index) {
   if (currentData.events.length <= 1) { showToast('⚠️ Keep at least 1 event'); return; }
+  await flushPendingSave();
   currentData.events.splice(index, 1);
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
 }
 
-// ---------- C&E Matrix ----------
+// C&E Matrix
 function renderMatrix(data) {
   let html = `
     <table class="rca-table" style="margin-bottom:1rem;">
       <tr><td style="width:140px;font-weight:600;color:var(--green);">📅 Date</td><td><span class="editable-field" data-path="matrix.date" data-placeholder="YYYY-MM-DD" contenteditable="true">${escHtml(data.date)}</span></td></tr>
       <tr><td style="font-weight:600;color:var(--green);">🔴 Problem</td><td><span class="editable-field ${!data.problem?'placeholder':''}" data-path="matrix.problem" data-placeholder="Describe the problem" contenteditable="true">${escHtml(data.problem) || 'Describe the problem'}</span></td></tr>
     </table>
-    <p style="font-size:0.8rem;color:var(--text3);">Score each cause 1-5: <strong>S</strong>=Severity, <strong>O</strong>=Occurrence, <strong>D</strong>=Detection. <strong>RPN = S × O × D</strong> (auto-calculated)</p>
+    <p style="font-size:0.8rem;color:var(--text3);">Score each cause 1-5: <strong>S</strong>=Severity, <strong>O</strong>=Occurrence, <strong>D</strong>=Detection. <strong>RPN = S × O × D</strong></p>
     <table class="rca-table" id="matrixTable">
       <thead><tr><th>Potential Cause</th><th style="width:50px;">S</th><th style="width:50px;">O</th><th style="width:50px;">D</th><th style="width:60px;">RPN</th><th class="row-actions"></th></tr></thead>
       <tbody>
@@ -728,21 +747,20 @@ function renderMatrix(data) {
       </tbody>
     </table>
     <button class="btn btn-outline btn-sm" onclick="addMatrixRow()">+ Add Cause Row</button>
-    <p style="font-size:0.75rem;color:var(--text3);margin-top:0.4rem;">💡 Change S/O/D values and the RPN recalculates automatically.</p>
   `;
   return html;
 }
 
-// FIX: addMatrixRow now saves immediately
 async function addMatrixRow() {
+  await flushPendingSave();
   currentData.rows.push({ cause: '', severity: '3', occurrence: '3', detection: '3' });
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
 }
 
-// FIX: deleteMatrixRow now saves immediately
 async function deleteMatrixRow(index) {
   if (currentData.rows.length <= 1) { showToast('⚠️ Keep at least 1 row'); return; }
+  await flushPendingSave();
   currentData.rows.splice(index, 1);
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
@@ -768,7 +786,7 @@ function recalcMatrixDisplay() {
   autoSave(currentTab, currentData);
 }
 
-// ---------- Checklist ----------
+// Checklist
 function renderChecklist(data) {
   let html = `
     <table class="rca-table" style="margin-bottom:1rem;">
@@ -797,8 +815,8 @@ function renderChecklist(data) {
   return html;
 }
 
-// FIX: addChecklistItem now saves immediately
 async function addChecklistItem() {
+  await flushPendingSave();
   currentData.items.push({ question: 'New item', checked: false, notes: '' });
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
@@ -809,7 +827,7 @@ function updateChecklistItem(index, field, value) {
   autoSave(currentTab, currentData);
 }
 
-// ---------- Problem Solving ----------
+// Problem Solving
 function renderProblemSolve(data) {
   let html = `
     <table class="rca-table" style="margin-bottom:1rem;">
@@ -859,82 +877,60 @@ function renderProblemSolve(data) {
   return html;
 }
 
-// FIX: addProblemItem now saves immediately
 async function addProblemItem(arrayKey) {
+  await flushPendingSave();
   currentData[arrayKey].push('');
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
 }
 
-// FIX: deleteProblemItem now saves immediately — this was the main bug!
 async function deleteProblemItem(arrayKey, index) {
   if (currentData[arrayKey].length <= 1) { showToast('⚠️ Keep at least 1 item'); return; }
+  await flushPendingSave();
   currentData[arrayKey].splice(index, 1);
   await saveNow(currentTab, currentData);
   renderTemplate(currentTab, currentData);
 }
 
-// ---------- Attach Editable Field Listeners (FIX: placeholder handling) ----------
+// ---------- Attach Editable Field Listeners ----------
 function attachEditableListeners(key) {
   document.querySelectorAll('.editable-field[contenteditable="true"]').forEach(el => {
-    // FIX: On focus — clear placeholder text automatically
     el.addEventListener('focus', function() {
       const placeholder = this.getAttribute('data-placeholder');
       if (placeholder && this.innerText.trim() === placeholder) {
         this.innerText = '';
         this.classList.remove('placeholder');
       }
-      // If the field has the placeholder class but text differs, remove the class
-      if (this.classList.contains('placeholder') && this.innerText.trim() !== placeholder) {
-        this.classList.remove('placeholder');
-      }
     });
-
-    // FIX: On blur — restore placeholder if empty
     el.addEventListener('blur', function() {
       const placeholder = this.getAttribute('data-placeholder');
       const text = this.innerText.trim();
-      if (!text || text === '') {
-        if (placeholder) {
-          this.innerText = placeholder;
-          this.classList.add('placeholder');
-        }
+      if (!text && placeholder) {
+        this.innerText = placeholder;
+        this.classList.add('placeholder');
       } else if (text === placeholder) {
-        // User typed exactly the placeholder text — keep it but ensure class is present
         this.classList.add('placeholder');
       } else {
-        // User typed real content — ensure placeholder class is removed
         this.classList.remove('placeholder');
       }
     });
-
-    // FIX: On input — update data and remove placeholder class as user types
     el.addEventListener('input', function() {
       const path = this.getAttribute('data-path');
       const placeholder = this.getAttribute('data-placeholder');
       const value = this.innerText.trim();
-
-      // If user starts typing, remove placeholder class immediately
-      if (value !== placeholder || !placeholder) {
-        this.classList.remove('placeholder');
-      }
-
+      if (value !== placeholder) this.classList.remove('placeholder');
       if (!path) return;
       setNestedValue(currentData, path, value);
       autoSave(key, currentData);
-
-      // Redraw fishbone if needed
       if (key === 'fishbone' && path.startsWith('fishbone')) {
         setTimeout(() => drawFishboneSVG(currentData), 200);
       }
-      // Recalculate matrix RPN if needed
       if (key === 'matrix' && path.startsWith('matrix.rows') && (path.includes('severity') || path.includes('occurrence') || path.includes('detection'))) {
         recalcMatrixDisplay();
       }
     });
   });
 
-  // Checkbox listeners (unchanged)
   document.querySelectorAll('input[type="checkbox"][data-path]').forEach(cb => {
     cb.addEventListener('change', function() {
       const path = this.getAttribute('data-path');
@@ -986,7 +982,7 @@ async function init() {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const tab = btn.getAttribute('data-tab');
-      renderTemplate(tab); // No preloaded data — will fetch from IndexedDB
+      renderTemplate(tab);
     });
   });
 
