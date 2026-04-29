@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Human Interface · Customer Service for Service BMEs</title>
+  <style>
+    :root {
+      --bg: #f5efe0;
+      --surface: #fffdf7;
+      --text: #3e3a34;
+      --text2: #5c5548;
+      --text3: #8a8275;
+      --gold: #9e7d3f;
+      --gold-light: #c9a85c;
+      --green: #2b5a3a;
+      --green-light: #3d7a52;
+      --red: #b54a3e;
+      --border: #d9d0bb;
+      --border2: #e8e0cd;
+      --radius: 6px;
+      --font: 'Georgia', 'Times New Roman', serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      line-height: 1.7;
+    }
+    .book-container {
+      max-width: 760px;
+      width: 100%;
+      background: var(--surface);
+      border-radius: 4px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.1);
+      padding: 3rem 2.5rem;
+      margin-bottom: 2rem;
+    }
+    .page {
+      page-break-after: always;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px dashed #c9bb9a;
+      min-height: 50vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .page:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; page-break-after: auto; }
+    h1 {
+      font-size: 2.3rem;
+      font-weight: 400;
+      text-align: center;
+      color: var(--green);
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.4px;
+      border-bottom: 3px double #b9975b;
+      padding-bottom: 0.8rem;
+      font-style: italic;
+    }
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: #4a3f2f;
+      margin: 1.3rem 0 0.7rem;
+      font-style: italic;
+      text-align: center;
+    }
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: #5e4a34;
+      margin: 1rem 0 0.5rem;
+      border-left: 4px solid var(--gold);
+      padding-left: 1rem;
+    }
+    .value-sentence {
+      font-size: 1.15rem;
+      font-style: italic;
+      color: #7a623f;
+      text-align: center;
+      margin: 1.4rem 0;
+      padding: 0.6rem 1rem;
+      border-top: 1px solid #c9bb9a;
+      border-bottom: 1px solid #c9bb9a;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+    .qatar-note {
+      background: #f3efe2;
+      padding: 0.8rem 1.3rem;
+      border-left: 5px solid #8b6f4a;
+      font-style: italic;
+      margin: 1.2rem 0;
+      color: #4b3d2c;
+      font-size: 0.95rem;
+    }
+    .exercise-box {
+      background: #f8f6ed;
+      border: 2px solid #b9975b;
+      padding: 1.1rem 1.4rem;
+      margin: 1.2rem 0;
+      border-radius: var(--radius);
+    }
+    .exercise-box h4 {
+      color: #7a5c2e;
+      margin-top: 0;
+      font-style: italic;
+      font-size: 1rem;
+    }
+    .exercise-box .lines {
+      border-bottom: 1px dotted #b9a98b;
+      height: 1.8rem;
+      margin: 0.4rem 0;
+    }
+    .exercise-box .lines.long {
+      height: 3rem;
+      border-bottom: 1px dotted #b9a98b;
+    }
+    .action-box {
+      background: #eef6f0;
+      border: 1px solid #b6cfb8;
+      padding: 1rem 1.4rem;
+      margin: 1.2rem 0;
+      border-radius: var(--radius);
+    }
+    .action-box strong { color: #2b4b3a; font-size: 1.05rem; }
+    .framework-box {
+      background: #fdfaf3;
+      border: 1px solid #d4c8a8;
+      padding: 1rem 1.4rem;
+      margin: 1.2rem 0;
+      border-radius: var(--radius);
+    }
+    ul, ol { margin: 0.6rem 0 0.6rem 2rem; }
+    li { margin-bottom: 0.2rem; }
+    .chapter-title {
+      font-size: 1.4rem;
+      text-align: center;
+      color: #2b4b3a;
+      margin: 0.5rem 0 1.5rem;
+      font-style: italic;
+    }
+    .signature {
+      text-align: right;
+      font-style: italic;
+      color: #8b6f4a;
+      margin-top: 1.6rem;
+    }
+    .toc-item {
+      margin: 0.4rem 0;
+      font-size: 0.9rem;
+      padding-left: 1rem;
+      border-left: 2px solid #b9975b;
+    }
+    .page-number {
+      text-align: right;
+      font-size: 0.85rem;
+      color: #a19478;
+      margin-top: 1.1rem;
+      font-style: italic;
+    }
+    .highlight { color: #8b5e3c; font-weight: 600; }
+    .letter { font-style: italic; color: #3e3525; }
+    .my-input {
+      display: inline-block;
+      min-width: 120px;
+      border-bottom: 1px dashed #8b6f4a;
+      color: #5e4a34;
+    }
+    table.never-always { width:100%; border-collapse:collapse; margin:1rem 0; }
+    table.never-always th { background:#f5f2e9; padding:0.5rem; text-align:left; font-weight:600; color:var(--green); }
+    table.never-always td { padding:0.5rem; border-bottom:1px solid var(--border2); vertical-align:top; }
+    @media print {
+      @page { size: A4; margin: 2cm 1.8cm 2.2cm 1.8cm; }
+      body { background: white; padding: 0; margin: 0; color: black; }
+      .book-container { max-width: 100%; box-shadow: none; border-radius: 0; background: white; padding: 0; margin: 0; width: 100%; }
+      .page { page-break-after: always; border-bottom: none; margin-bottom: 0; padding-bottom: 0; min-height: auto; display: block; }
+      .page:last-child { page-break-after: auto; }
+      .qatar-note, .exercise-box, .action-box, .framework-box { background: #f9f9f3; border-color: #aaa; color: #1a1a1a; }
+      .value-sentence { color: #4a351c; border-color: #8b6f4a; }
+      .page-number { color: #5c5040; }
+      h1, h2, h3, .chapter-title { color: #1f3327; }
+    }
+  </style>
+</head>
+<body>
+  <div class="book-container">
+
+    <!-- PAGE 1 – COVER -->
+    <div class="page">
+      <h1>The Human Interface</h1>
+      <p style="text-align:center; font-size:1.25rem; color:#4a3f2f;">Customer Service for Service BMEs</p>
+      <p style="text-align:center; margin-top:2rem; color:#8b6f4a;">📍 Qatar · Lab Equipment Specialist · From Fixer to Trusted Partner</p>
+      <div class="value-sentence">“You are not just solving a technical problem with a device. You are solving a human’s problem that involves a device.”</div>
+      <p style="text-align:center; margin-top:3rem; color:#5e4a34;">
+        An interactive guide built from real BME customer service training — adapted for the engineer who works among analyzers, reagents, and urgency.
+      </p>
+      <div class="page-number">— 1 —</div>
+    </div>
+
+    <!-- PAGE 2 – TABLE OF CONTENTS -->
+    <div class="page">
+      <h2>What You'll Practice in This Book</h2>
+      <div class="toc-item"><strong>1.</strong> The Call That Changed Everything</div>
+      <div class="toc-item"><strong>2.</strong> The BME Customer Service Mindset</div>
+      <div class="toc-item"><strong>3.</strong> Your Voice: The Engineering of Tone</div>
+      <div class="toc-item"><strong>4.</strong> The 5 E’s of Every Interaction</div>
+      <div class="toc-item"><strong>5.</strong> Handling Complaints with L.A.S.T.</div>
+      <div class="toc-item"><strong>6.</strong> Building Rapport with F.O.R.D.</div>
+      <div class="toc-item"><strong>7.</strong> First Call Resolution (FCR)</div>
+      <div class="toc-item"><strong>8.</strong> Non‑Voice Communication (Email, Chat, Tickets)</div>
+      <div class="toc-item"><strong>9.</strong> Advanced De‑escalation & Resilience</div>
+      <div class="toc-item"><strong>10.</strong> Your 30‑Day CS Mastery Plan</div>
+      <div class="toc-item"><strong>11.</strong> A Letter to the Trusted Partner You’re Becoming</div>
+      <hr>
+      <p>This book turns your daily interactions into trust‑building opportunities. Each chapter gives you tools you can use on your very next call or site visit.</p>
+      <div class="page-number">— 2 —</div>
+    </div>
+
+    <!-- PAGE 3 – CHAPTER 1 -->
+    <div class="page">
+      <div class="chapter-title">1. The Call That Changed Everything</div>
+      <p>A frantic lab manager. A blood gas analyzer down. Doctors screaming. I answered the phone and my first instinct was to jump into technical questions. But something stopped me. I remembered a training that said: “First, acknowledge the human.” So I said, “I understand how stressful this is. I’m going to stay with you until we fix it.”</p>
+      <p>The tension in her voice dropped instantly. She gave me better information. We solved it faster. That was the day I realised customer service isn’t a soft skill — it’s a diagnostic tool.</p>
+      <div class="value-sentence">“Your technical brilliance is invisible if the human in front of you doesn’t feel heard.”</div>
+      <div class="exercise-box">
+        <h4>✎ Your Turn: Recall a Tense Call</h4>
+        <p>Describe a time when a customer was upset and you had to respond. What did you say first? How did it go?</p>
+        <div class="lines long"></div>
+        <div class="lines"></div>
+      </div>
+      <div class="page-number">— 3 —</div>
+    </div>
+
+    <!-- PAGE 4 – CHAPTER 2 -->
+    <div class="page">
+      <h3>2. The BME Customer Service Mindset</h3>
+      <p>Many engineers think their job ends when the machine works. The new mindset: <strong>your primary job is to create a loyal customer</strong>. Loyalty makes price irrelevant. A lab manager who trusts you won’t shop for a cheaper contract. They’ll call you by name.</p>
+      <div class="framework-box">
+        <h4>🧠 The Prime Directive</h4>
+        <p><strong>Wrong:</strong> “The analyzer is malfunctioning.”<br>
+        <strong>Right:</strong> “A lab technician can’t release patient results because the analyzer is down, disrupting the entire morning workflow.”</p>
+        <p>You solve the human crisis, not just the technical fault.</p>
+      </div>
+      <div class="qatar-note">In Qatar’s 24/7 labs, every minute of downtime affects patient care. Your calm, human‑first response is as important as your multimeter.</div>
+      <div class="exercise-box">
+        <h4>✎ Reframe Your Last Repair</h4>
+        <p>Think of your most recent call. Write the “human crisis” behind the technical fault:</p>
+        <div class="lines long"></div>
+      </div>
+      <div class="page-number">— 4 —</div>
+    </div>
+
+    <!-- PAGE 5 – CHAPTER 3 -->
+    <div class="page">
+      <h3>3. Your Voice: The Engineering of Tone</h3>
+      <p>On the phone, your voice is the only instrument the customer perceives. Master these four elements:</p>
+      <ul>
+        <li><strong>Rate:</strong> Moderate speed. Slow down for important details. Speed up slightly to keep energy.</li>
+        <li><strong>Pitch:</strong> Vary your tone. A monotone voice sounds robotic and uninterested.</li>
+        <li><strong>Quality:</strong> Eliminate background noise. Never use speakerphone in a lab.</li>
+        <li><strong>Clarity:</strong> No jargon. No fillers (“um”, “uh”). Use simple, direct language.</li>
+      </ul>
+      <div class="value-sentence">“It’s not just what you say — it’s the way you say it. Your voice is the user interface to your expertise.”</div>
+      <div class="exercise-box">
+        <h4>✎ Practice: Rate & Pitch Self‑Check</h4>
+        <p>Next time you’re on a call, consciously adjust your speaking pace. After the call, ask yourself: did I sound rushed? Did I vary my pitch? Write your observations:</p>
+        <div class="lines long"></div>
+      </div>
+      <div class="page-number">— 5 —</div>
+    </div>
+
+    <!-- PAGE 6 – CHAPTER 4 -->
+    <div class="page">
+      <h3>4. The 5 E’s of Every Interaction</h3>
+      <p>Whether on a call or on‑site, every interaction should include these five elements:</p>
+      <ol>
+        <li><strong>Eye Contact:</strong> (in person) Shows focus. On the phone, “eye contact” means full attention — no distractions.</li>
+        <li><strong>Ear‑to‑Ear Smile:</strong> They hear it. A smile changes your tone immediately.</li>
+        <li><strong>Enthusiastic Greeting:</strong> “Good morning, this is [Name]. How can I help you today?”</li>
+        <li><strong>Engage:</strong> Listen actively. Ask questions. Paraphrase their words.</li>
+        <li><strong>Educate:</strong> Explain the issue simply. “The sensor needed recalibration because of a power fluctuation — I’ve adjusted it and added a check to prevent this.”</li>
+      </ol>
+      <div class="exercise-box">
+        <h4>✎ Self‑Audit</h4>
+        <p>Rate your last interaction (1‑5) on each E: Eye<span class="my-input">/5</span> Smile<span class="my-input">/5</span> Enthusiastic<span class="my-input">/5</span> Engage<span class="my-input">/5</span> Educate<span class="my-input">/5</span></p>
+        <p>Which one needs the most work?</p>
+        <div class="lines"></div>
+      </div>
+      <div class="page-number">— 6 —</div>
+    </div>
+
+    <!-- PAGE 7 – CHAPTER 5 -->
+    <div class="page">
+      <h3>5. Handling Complaints with L.A.S.T.</h3>
+      <p>Problems will happen. Your response defines the relationship. Use this proven method:</p>
+      <div class="framework-box">
+        <h4>🛡️ L.A.S.T. Method</h4>
+        <p><strong>L – Listen:</strong> Let them vent. Don’t interrupt. Don’t prepare your defense.<br>
+        <strong>A – Apologise:</strong> “I’m sorry you’re going through this.” (Apology ≠ blame; it’s empathy.)<br>
+        <strong>S – Solve:</strong> Take ownership. “I will personally handle this.”<br>
+        <strong>T – Thank:</strong> “Thank you for your patience and for bringing this to our attention.”</p>
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Script Your L.A.S.T.</h4>
+        <p>Imagine a lab manager is furious because a centrifuge failed during a STAT run. Write your L.A.S.T. response:</p>
+        <div class="lines long"></div>
+        <div class="lines long"></div>
+      </div>
+      <div class="value-sentence">“A complaint is a gift — it’s a chance to turn a frustrated user into a loyal advocate.”</div>
+      <div class="page-number">— 7 —</div>
+    </div>
+
+    <!-- PAGE 8 – CHAPTER 6 -->
+    <div class="page">
+      <h3>6. Building Rapport with F.O.R.D.</h3>
+      <p>To build long‑term loyalty, show you care about the person, not just the machine. Listen for personal details using the F.O.R.D. method:</p>
+      <ul>
+        <li><strong>F – Family:</strong> “You mentioned your son’s graduation last time — how did it go?”</li>
+        <li><strong>O – Occupation:</strong> “What’s your biggest challenge as a lab manager right now?”</li>
+        <li><strong>R – Recreation:</strong> “Did you get to watch the football final?”</li>
+        <li><strong>D – Dreams:</strong> “Where do you want your department to be in two years?”</li>
+      </ul>
+      <p>Make a note after each visit. The next time you see them, reference something personal. This small effort creates an unbreakable bond.</p>
+      <div class="exercise-box">
+        <h4>✎ Your F.O.R.D. Notes</h4>
+        <p>Think of a regular customer. Write one personal detail you know about them for each letter:</p>
+        <p>F: <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> O: <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+        <p>R: <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> D: <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+      </div>
+      <div class="page-number">— 8 —</div>
+    </div>
+
+    <!-- PAGE 9 – CHAPTER 7 -->
+    <div class="page">
+      <h3>7. First Call Resolution (FCR)</h3>
+      <p>FCR = solving the issue without needing a callback. Each time a customer has to follow up, satisfaction drops by ~15%. Calculate your personal FCR: <strong>FCR = Resolved First Time / Total Cases</strong>. Aim for >90%.</p>
+      <div class="action-box">
+        <strong>🔧 How to Improve FCR</strong><br>
+        • Ask clarifying questions. Repeat the problem back.<br>
+        • Set clear expectations: “This will take about 20 minutes.”<br>
+        • If you can’t solve it immediately, explain the next step clearly.<br>
+        • Follow up proactively: “I’ll call you in 1 hour with an update.”
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Track Your FCR This Week</h4>
+        <p>After each call, note whether it was resolved on first contact. At the end of the week, calculate your rate:</p>
+        <p>Resolved: <span class="my-input">/</span> Total: <span class="my-input">&nbsp;&nbsp;</span> → FCR = <span class="my-input">%</span></p>
+      </div>
+      <div class="page-number">— 9 —</div>
+    </div>
+
+    <!-- PAGE 10 – CHAPTER 8 -->
+    <div class="page">
+      <h3>8. Non‑Voice Communication (Email, Chat, Tickets)</h3>
+      <p>When you’re not speaking, your words carry the full weight. Follow these principles:</p>
+      <ul>
+        <li><strong>Read thoroughly before responding.</strong> Misunderstanding is the #1 cause of repeat tickets.</li>
+        <li><strong>Respond quickly, always respectfully.</strong> Even if the customer is difficult.</li>
+        <li><strong>Be human.</strong> Avoid robotic templates. Use their name. Write like you speak.</li>
+        <li><strong>Use positive language.</strong> Replace “We can’t do that” with “What we can do is…”</li>
+        <li><strong>Always say thank you.</strong> End every message with appreciation.</li>
+      </ul>
+      <div class="framework-box">
+        <h4>📧 The Never/Always List</h4>
+        <table class="never-always">
+          <tr><th>Never Say…</th><th>Always Say Instead…</th></tr>
+          <tr><td>“I don’t know.”</td><td>“That’s a great question. Let me find out for you.”</td></tr>
+          <tr><td>“No, we can’t do that.”</td><td>“While that specific option isn’t available, here’s what we can do…”</td></tr>
+          <tr><td>“It’s not our fault.”</td><td>“I understand your frustration. I’m owning this and will get it resolved.”</td></tr>
+          <tr><td>“No problem.”</td><td>“It’s my pleasure.” or “Of course, I’m happy to help.”</td></tr>
+          <tr><td>“You need to talk to someone else.”</td><td>“Let me connect you with [Name], our expert on this. I’ll brief them first.”</td></tr>
+        </table>
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Rewrite One of Your Emails</h4>
+        <p>Recall a recent email you sent. Did it include any forbidden phrases? Rewrite it using the “Always” column:</p>
+        <div class="lines long"></div>
+      </div>
+      <div class="page-number">— 10 —</div>
+    </div>
+
+    <!-- PAGE 11 – CHAPTER 9 -->
+    <div class="page">
+      <h3>9. Advanced De‑escalation & Resilience</h3>
+      <p>When a customer is angry, use <strong>Feel, Felt, Found</strong>:</p>
+      <blockquote>“I understand how you <strong>feel</strong>. Other labs <strong>felt</strong> the same way when they first upgraded. What they <strong>found</strong> was that after adjusting the settings, it became their most reliable instrument.”</blockquote>
+      <p>For your own resilience:</p>
+      <ul>
+        <li><strong>Detachment Ritual:</strong> At the end of the day, close all tickets mentally. Write tomorrow’s top priority. Then do something physical.</li>
+        <li><strong>Positive Data Log:</strong> Keep a folder of thank‑you messages and wins. Open it on tough days.</li>
+        <li><strong>Strategic Tag‑Out:</strong> If you’re getting nowhere, say: “I want to make sure we explore every angle. Let me bring in my colleague [Name], who specialises in this.” It’s not failure — it’s teamwork.</li>
+      </ul>
+      <div class="exercise-box">
+        <h4>✎ Build Your Resilience Log</h4>
+        <p>Write down one positive customer feedback you’ve received recently:</p>
+        <div class="lines long"></div>
+        <p>How can you remind yourself of this when work gets hard?</p>
+        <div class="lines"></div>
+      </div>
+      <div class="page-number">— 11 —</div>
+    </div>
+
+    <!-- PAGE 12 – CHAPTER 10 -->
+    <div class="page">
+      <h3>10. Your 30‑Day CS Mastery Plan</h3>
+      <div class="action-box">
+        <strong>📋 30 Days to Customer Service Excellence</strong><br><br>
+        <strong>Week 1 – Voice & Tone:</strong> On every call, consciously adjust your rate and pitch. Smile before answering.<br>
+        <strong>Week 2 – L.A.S.T. in Action:</strong> Use the L.A.S.T. method on every complaint. Write down what you said.<br>
+        <strong>Week 3 – F.O.R.D. Practice:</strong> Learn one new personal detail about each regular customer.<br>
+        <strong>Week 4 – FCR & Follow‑Up:</strong> Track your FCR. Follow up on one resolved case with a thank‑you message.<br>
+        <strong>Ongoing:</strong> Keep your Positive Data Log active. Review it monthly.
+      </div>
+      <div class="exercise-box">
+        <h4>✎ Your Commitment</h4>
+
+
+        <p>I, <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, commit to this 30‑day challenge starting <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
+        <p>The one skill I’ll focus on most: <span class="my-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+      </div>
+      <div class="page-number">— 12 —</div>
+    </div>
+
+    <!-- PAGE 13 – CHAPTER 11 / FINAL LETTER -->
+    <div class="page">
+      <h2>11. A Letter to the Trusted Partner You’re Becoming</h2>
+
+
+      <p class="letter"><em>Dear future me,</em></p>
+      <p class="letter"><em>You are more than a fixer. You are the human interface between complex technology and the people who depend on it. Every call is a chance to build trust. Every complaint is an opportunity to deepen loyalty. Keep your voice warm, your questions smart, and your promises kept. The lab will remember how you made them feel — not just how fast you fixed the machine.</em></p>
+      <div class="signature">— With empathy and commitment —</div>
+      <div class="exercise-box">
+        <h4>✎ Write Your Own Letter</h4>
+
+
+        <p>What do you want to remind yourself when customer service feels hard?</p>
+        <div class="lines long"></div>
+        <div class="lines long"></div>
+      </div>
+      <div class="value-sentence">“Customer service is the user interface for your technical expertise. Make it brilliant.”</div>
+      <div class="page-number">— 13 —</div>
+    </div>
+
+  </div>
+</body>
+</html>
+
