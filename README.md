@@ -22,8 +22,7 @@ Built by a Service BME in Qatar 🇶🇦, for the global BME community.
 ## 🚀 Live Demo
 
 All tools and books are available at:  
-**https://YOUR_USERNAME.github.io/bme-toolkit**  
-*(Replace `YOUR_USERNAME` with your GitHub username)*
+**https://alisherif1309.github.io/bme-toolkit**  
 
 You can also run everything locally by opening any `index.html` file in your browser.
 
