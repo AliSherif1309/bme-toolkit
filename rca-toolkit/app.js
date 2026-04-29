@@ -1,20 +1,27 @@
 // ============================================================
 //  RCA Toolkit – app.js  (FIXED: data loss on delete/add)
+
 //  All 7 templates, user profile, version history, PWA, cloud sync
+
 // ============================================================
 
 // ---------- IndexedDB Setup ----------
+
 let db;
 const DB_NAME = 'rca_toolkit_db';
+
 const STORE_TEMPLATES = 'templates';
 const STORE_USER = 'user';
 
 function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 3);
+
     request.onupgradeneeded = (event) => {
+
       const db = event.target.result;
       if (!db.objectStoreNames.contains(STORE_TEMPLATES)) {
+
         db.createObjectStore(STORE_TEMPLATES, { keyPath: 'templateName' });
       }
       if (!db.objectStoreNames.contains(STORE_USER)) {
